@@ -1,6 +1,6 @@
 
 import React from "react";
-import HeroImage from "../assets/img/Hero.JFIF";
+import HeroImage from "../assets/img/Hero.jfif";
 import { useNavigate } from "react-router-dom";
 function Hero() {
 
