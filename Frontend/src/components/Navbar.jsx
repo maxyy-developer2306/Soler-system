@@ -7,7 +7,16 @@ function Navbar() {
 
   let location = useLocation()
   if(location.pathname=="/Calculate" ||
-     location.pathname=="/Calculate/all"
+     location.pathname=="/Calculate/all" ||
+     location.pathname=="/Calculate/refrigerator" ||
+     location.pathname=="/Calculate/fan" ||
+     location.pathname=="/Calculate/tv" ||
+     location.pathname=="/Calculate/computer" ||
+     location.pathname=="/Calculate/iron" ||
+     location.pathname=="/Calculate/kitchen" ||
+     location.pathname=="/Calculate/microwave" ||
+     location.pathname=="/Calculate/washing-machine" ||
+     location.pathname=="/Calculate/ac" 
     )
     
     return null

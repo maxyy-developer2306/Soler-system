@@ -8,6 +8,7 @@ function Iron() {
   const [dailyUsage, setDailyUsage] = useState(0);
   const [solarSystem, setSolarSystem] = useState(0);
   const [solarPanels, setSolarPanels] = useState(0);
+  
 
   const [iron, setIron] = useState({
     quantity: "",

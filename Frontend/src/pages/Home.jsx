@@ -14,11 +14,13 @@ import {
 } from "lucide-react";
 import Hero from "../components/Hero";
 import Footer from "../components/Footer";
+import MiniChatbot from "../components/MiniChatbot";
 
 function Home() {
   return (
     <div>
       <Hero />
+      <MiniChatbot />
 
       <div className="p-10">
         <div className="flex items-center justify-between">

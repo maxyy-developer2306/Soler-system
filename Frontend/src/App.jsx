@@ -24,6 +24,7 @@ import Kitchen from "./pages/user/Kitchen";
 import Microwave from "./pages/user/Microwave";
 import WashingMachine from "./pages/user/WashingMachine";
 
+import MiniChatbot from "./components/MiniChatbot";
 function App() {
   return (
     <div>
@@ -35,6 +36,7 @@ function App() {
           <Route path="/Hero" element={<Hero />} />
           <Route path="/Footer" element={<Footer />} />
           <Route path="/HowItWorks" element={<HowItWorks />} />
+          <Route path="/MiniChatbot" element={<MiniChatbot />} />
 
           <Route
             path="/Calculate/all"

@@ -1,7 +1,12 @@
-
 import React, { useState } from "react";
 
 function AllAppliances() {
+  const [totalUnits, setTotalUnits] = useState(0);
+  const [dailyUsage, setDailyUsage] = useState(0);
+  const [connectedLoad, setConnectedLoad] = useState(0);
+  const [solarSystem, setSolarSystem] = useState(0);
+  const [solarPanels, setSolarPanels] = useState(0);
+
   const [lights, setLights] = useState({
     quantity: "",
     days: "",
@@ -62,41 +67,29 @@ function AllAppliances() {
     hours: "",
   });
 
-  const [totalUnits, setTotalUnits] = useState(0);
-  const [dailyUsage, setDailyUsage] = useState(0);
-  const [connectedLoad, setConnectedLoad] = useState(0);
-  const [solarSystem, setSolarSystem] = useState(0);
-  const [solarPanels, setSolarPanels] = useState(0);
-
   function calculateUnits() {
-    let lightUnits =
-      (24 * lights.quantity * lights.days * lights.hours) / 1000;
+    let lightUnits = (24 * lights.quantity * lights.days * lights.hours) / 1000;
 
-    let acUnits =
-      (1500 * ac.quantity * ac.days * ac.hours) / 1000;
+    let acUnits = (1500 * ac.quantity * ac.days * ac.hours) / 1000;
 
     let refrigeratorUnits =
       (150 * refrigerator.quantity * refrigerator.days * refrigerator.hours) /
       1000;
 
-    let fanUnits =
-      (80 * fan.quantity * fan.days * fan.hours) / 1000;
+    let fanUnits = (80 * fan.quantity * fan.days * fan.hours) / 1000;
 
-    let tvUnits =
-      (120 * tv.quantity * tv.days * tv.hours) / 1000;
+    let tvUnits = (120 * tv.quantity * tv.days * tv.hours) / 1000;
 
     let computerUnits =
       (200 * computer.quantity * computer.days * computer.hours) / 1000;
 
-    let ironUnits =
-      (1000 * iron.quantity * iron.days * iron.hours) / 1000;
+    let ironUnits = (1000 * iron.quantity * iron.days * iron.hours) / 1000;
 
     let kitchenUnits =
       (1000 * kitchen.quantity * kitchen.days * kitchen.hours) / 1000;
 
     let microwaveUnits =
-      (1200 * microwave.quantity * microwave.days * microwave.hours) /
-      1000;
+      (1200 * microwave.quantity * microwave.days * microwave.hours) / 1000;
 
     let washingMachineUnits =
       (500 *
@@ -133,7 +126,7 @@ function AllAppliances() {
 
     let solar = daily / 5;
 
-    let solarWithLoss = solar / 0.80;
+    let solarWithLoss = solar / 0.8;
 
     let panels = Math.ceil(solarWithLoss / 0.55);
 
@@ -146,7 +139,6 @@ function AllAppliances() {
 
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6 text-slate-800">
-
       <h1 className="text-3xl font-bold text-center text-slate-900 mb-2">
         All Appliances Calculator
       </h1>
@@ -157,13 +149,11 @@ function AllAppliances() {
       </p>
 
       <div className="border border-slate-200 rounded-lg bg-white overflow-hidden">
-
         <div className="bg-slate-900 text-white p-3 font-bold">
           Household Appliances
         </div>
 
         <div className="p-4">
-
           <div className="flex items-center border-b pb-3 font-bold text-sm">
             <p className="w-40">Appliance</p>
             <p className="w-20">Watts</p>
@@ -213,13 +203,7 @@ function AllAppliances() {
               className="w-16 border rounded p-1 mr-8"
             />
 
-            <p>
-              {(24 *
-                lights.quantity *
-                lights.days *
-                lights.hours) /
-                1000}
-            </p>
+            <p>{(24 * lights.quantity * lights.days * lights.hours) / 1000}</p>
           </div>
 
           <div className="flex items-center border-b py-3 text-sm">
@@ -262,13 +246,7 @@ function AllAppliances() {
               className="w-16 border rounded p-1 mr-8"
             />
 
-            <p>
-              {(1500 *
-                ac.quantity *
-                ac.days *
-                ac.hours) /
-                1000}
-            </p>
+            <p>{(1500 * ac.quantity * ac.days * ac.hours) / 1000}</p>
           </div>
 
           <div className="flex items-center border-b py-3 text-sm">
@@ -360,13 +338,7 @@ function AllAppliances() {
               className="w-16 border rounded p-1 mr-8"
             />
 
-            <p>
-              {(80 *
-                fan.quantity *
-                fan.days *
-                fan.hours) /
-                1000}
-            </p>
+            <p>{(80 * fan.quantity * fan.days * fan.hours) / 1000}</p>
           </div>
 
           <div className="flex items-center border-b py-3 text-sm">
@@ -409,13 +381,7 @@ function AllAppliances() {
               className="w-16 border rounded p-1 mr-8"
             />
 
-            <p>
-              {(120 *
-                tv.quantity *
-                tv.days *
-                tv.hours) /
-                1000}
-            </p>
+            <p>{(120 * tv.quantity * tv.days * tv.hours) / 1000}</p>
           </div>
 
           <div className="flex items-center border-b py-3 text-sm">
@@ -459,10 +425,7 @@ function AllAppliances() {
             />
 
             <p>
-              {(200 *
-                computer.quantity *
-                computer.days *
-                computer.hours) /
+              {(200 * computer.quantity * computer.days * computer.hours) /
                 1000}
             </p>
           </div>
@@ -507,13 +470,7 @@ function AllAppliances() {
               className="w-16 border rounded p-1 mr-8"
             />
 
-            <p>
-              {(1000 *
-                iron.quantity *
-                iron.days *
-                iron.hours) /
-                1000}
-            </p>
+            <p>{(1000 * iron.quantity * iron.days * iron.hours) / 1000}</p>
           </div>
 
           <div className="flex items-center border-b py-3 text-sm">
@@ -557,11 +514,7 @@ function AllAppliances() {
             />
 
             <p>
-              {(1000 *
-                kitchen.quantity *
-                kitchen.days *
-                kitchen.hours) /
-                1000}
+              {(1000 * kitchen.quantity * kitchen.days * kitchen.hours) / 1000}
             </p>
           </div>
 
@@ -606,10 +559,7 @@ function AllAppliances() {
             />
 
             <p>
-              {(1200 *
-                microwave.quantity *
-                microwave.days *
-                microwave.hours) /
+              {(1200 * microwave.quantity * microwave.days * microwave.hours) /
                 1000}
             </p>
           </div>
@@ -662,7 +612,6 @@ function AllAppliances() {
                 1000}
             </p>
           </div>
-
         </div>
       </div>
 
@@ -674,11 +623,8 @@ function AllAppliances() {
       </button>
 
       <div className="flex mt-6">
-
         <div className="border rounded-lg p-5 mr-4 w-56">
-          <p className="text-sm text-slate-500">
-            Daily Usage
-          </p>
+          <p className="text-sm text-slate-500">Daily Usage</p>
 
           <h2 className="text-2xl font-bold mt-2">
             {dailyUsage.toFixed(2)} kWh
@@ -690,9 +636,7 @@ function AllAppliances() {
         </div>
 
         <div className="border rounded-lg p-5 mr-4 w-56">
-          <p className="text-sm text-slate-500">
-            Monthly Usage
-          </p>
+          <p className="text-sm text-slate-500">Monthly Usage</p>
 
           <h2 className="text-2xl font-bold mt-2">
             {totalUnits.toFixed(2)} kWh
@@ -704,23 +648,15 @@ function AllAppliances() {
         </div>
 
         <div className="border rounded-lg p-5 mr-4 w-56">
-          <p className="text-sm text-slate-500">
-            Connected Load
-          </p>
+          <p className="text-sm text-slate-500">Connected Load</p>
 
-          <h2 className="text-2xl font-bold mt-2">
-            {connectedLoad} W
-          </h2>
+          <h2 className="text-2xl font-bold mt-2">{connectedLoad} W</h2>
 
-          <p className="text-sm text-slate-500 mt-2">
-            Total appliance load
-          </p>
+          <p className="text-sm text-slate-500 mt-2">Total appliance load</p>
         </div>
 
         <div className="border rounded-lg p-5 w-64">
-          <p className="text-sm text-slate-500">
-            Recommended Solar
-          </p>
+          <p className="text-sm text-slate-500">Recommended Solar</p>
 
           <h2 className="text-2xl font-bold mt-2">
             {solarSystem.toFixed(2)} kW
@@ -730,9 +666,7 @@ function AllAppliances() {
             Requires {solarPanels} Panels (550W)
           </p>
         </div>
-
       </div>
-
     </div>
   );
 }
