@@ -13,14 +13,22 @@ import cookieParser from "cookie-parser"
 dotenv.config()
 dbConection()
 
+const allowedOrigins = [
+  "https://soler-system-j2sf.vercel.app",
+  "http://localhost:5173",
+  ...(process.env.Frontend_Url ?? "")
+    .split(",")
+    .map((origin) => origin.trim().replace(/\/+$/, ""))
+    .filter(Boolean),
+]
+
 let app = express()
 
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors({
-   origin: process.env.Frontend_Url,
-    credentials: true
-    
+  origin: allowedOrigins,
+  credentials: true,
 }))
 
 app.use("/user", userRoute)
