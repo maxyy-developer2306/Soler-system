@@ -71,7 +71,10 @@ function Register() {
       navigate("/Products_managment");
     }
   } catch (error) {
-    console.log(error);
+    setMsg(
+      error.response?.data?.msg ||
+      "Registration failed. Please try again later."
+    );
   }
 }
   

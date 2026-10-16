@@ -17,13 +17,23 @@ const authCookieOptions = {
 
 export async function Registeration(req,res) {
   let { name, email, phone, password, role } = req.body;
-  const jwtSecret = getJwtSecret();
 
   if (role === "admin") {
     return res.status(403).json({
       success: false,
       msg: "Admin accounts can only be assigned by the owner"
     });
+  }
+
+  let jwtSecret
+  try {
+    jwtSecret = getJwtSecret()
+  } catch (error) {
+    console.error("Registration configuration error:", error.message)
+    return res.status(503).json({
+      success: false,
+      msg: "Registration is temporarily unavailable. Server auth is not configured."
+    })
   }
 
   const normalizedEmail = email?.trim().toLowerCase();
@@ -73,7 +83,6 @@ export async function Registeration(req,res) {
 
 export async function login(req,res){
   let {email, password, role} = req.body;
-  const jwtSecret = getJwtSecret();
   const normalizedEmail = email?.trim().toLowerCase();
   const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
 
@@ -89,6 +98,17 @@ export async function login(req,res){
       success: false,
       msg: "This account is not authorized for owner access"
     });
+  }
+
+  let jwtSecret
+  try {
+    jwtSecret = getJwtSecret()
+  } catch (error) {
+    console.error("Login configuration error:", error.message)
+    return res.status(503).json({
+      success: false,
+      msg: "Login is temporarily unavailable. Server auth is not configured."
+    })
   }
 
   let existingData = await authModel.findOne({ email: normalizedEmail, role })
