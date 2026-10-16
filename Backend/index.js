@@ -29,6 +29,16 @@ app.use("/api/history", historyRoute)
 app.use("/api/admin", adminRoutes)
 // app.use("/api/profile", profileRoute)
 app.use("/api/orders", orderRoute)
+
+
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Solar System Backend Deployed Successfully"
+  })
+})
+
+
 app.listen(4000, function(){
     console.log("The server is running")
 })
