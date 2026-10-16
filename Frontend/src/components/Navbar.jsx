@@ -17,6 +17,7 @@ function Navbar() {
      location.pathname=="/Orders" ||
      location.pathname=="/Login" ||
      location.pathname=="/register" ||
+     location.pathname=="/Admin" ||
      location.pathname.startsWith("/EditProduct/") 
    
 

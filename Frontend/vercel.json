@@ -5,6 +5,14 @@
   "framework": "vite",
   "rewrites": [
     {
+      "source": "/user/(.*)",
+      "destination": "https://soler-system-tlvk.vercel.app/user/$1"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "https://soler-system-tlvk.vercel.app/api/$1"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
