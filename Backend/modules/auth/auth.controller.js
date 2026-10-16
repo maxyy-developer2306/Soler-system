@@ -2,6 +2,14 @@ import authModel from "./auth.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
 
+const isProduction = process.env.NODE_ENV === "production" || process.env.VERCEL === "1"
+const authCookieOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? "none" : "lax",
+  path: "/",
+}
+
 
 
 // Registration Api
@@ -44,7 +52,7 @@ export async function Registeration(req,res) {
      console.log(token, "The token is here")
 
      let tokenData = jwt.sign(token, "maxyy");
-     res.cookie("Soler-system", tokenData)
+    res.cookie("Soler-system", tokenData, authCookieOptions)
  
     return res.json({
       success: true,
@@ -78,7 +86,7 @@ export async function login(req,res){
   }
 
   let tokenData = jwt.sign(token, "maxyy")
-  res.cookie("Soler-system", tokenData)
+  res.cookie("Soler-system", tokenData, authCookieOptions)
 
   return res.json({success:true, msg:"You are logged successfully"})
 }
