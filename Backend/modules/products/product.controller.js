@@ -2,7 +2,9 @@
 import productModel from "./productModel.js"
 import cloudinary from "../../shared/config/cloudinary.js"
 import historyModel from "../History/historyModel.js"
+import { deleteProductAndRelatedData } from "./productCleanup.js"
 import jwt from "jsonwebtoken"
+import { getJwtSecret } from "../../shared/auth/jwtSecret.js"
 
 function getUserId(req) {
   try {
@@ -12,7 +14,7 @@ function getUserId(req) {
       return null
     }
 
-    const decoded = jwt.verify(token, "maxyy")
+    const decoded = jwt.verify(token, getJwtSecret())
     return decoded.id || decoded._id || decoded.userId || null
   } catch (error) {
     return null
@@ -101,15 +103,12 @@ export async function createProduct(req, res) {
       sellerId: userId
     })
 
-    try {
-      await historyModel.create({
-        userId,
-        type: "Product",
-        message: `Product "${product.title}" added successfully`
-      })
-    } catch (historyError) {
-      console.log("Product History Error:", historyError)
-    }
+    await historyModel.create({
+      userId,
+      productId: product._id,
+      type: "Product",
+      message: `Product "${product.title}" added successfully`
+    })
 
     return res.status(201).json({
       success: true,
@@ -292,15 +291,12 @@ export async function editProduct(req, res) {
 
     await product.save()
 
-    try {
-      await historyModel.create({
-        userId,
-        type: "Product",
-        message: `Product "${product.title}" updated successfully`
-      })
-    } catch (historyError) {
-      console.log("Product History Error:", historyError)
-    }
+    await historyModel.create({
+      userId,
+      productId: product._id,
+      type: "Product",
+      message: `Product "${product.title}" updated successfully`
+    })
 
     return res.status(200).json({
       success: true,
@@ -344,17 +340,7 @@ export async function deleteProduct(req, res) {
       })
     }
 
-    await productModel.findByIdAndDelete(req.params.id)
-
-    try {
-      await historyModel.create({
-        userId,
-        type: "Product",
-        message: `Product "${product.title}" deleted successfully`
-      })
-    } catch (historyError) {
-      console.log("Product History Error:", historyError)
-    }
+    await deleteProductAndRelatedData(product)
 
     return res.status(200).json({
       success: true,

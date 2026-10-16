@@ -6,7 +6,7 @@ import {
   PlusCircle,
   History,
   User,
-  Settings,
+  
   LogOut,
   ArrowLeft,
   X,
@@ -22,7 +22,7 @@ function Sidbar() {
     { name: "Create Product", icon: PlusCircle, path: "/Myprodcuts" },
     { name: "History", icon: History, path: "/history" },
     { name: "Orders", icon: User, path: "/Orders" },
-    { name: "Settings", icon: Settings, path: "/settings" }
+   
   ]
 
   function handleLogout() {

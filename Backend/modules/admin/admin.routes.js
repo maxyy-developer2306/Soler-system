@@ -7,7 +7,8 @@ import {
   getAdminUsers,
   getAdminProducts,
   deleteAdminProduct,
-  getAdminOrders
+  getAdminOrders,
+  updateAdminOrderStatus
 } from "./admin.controller.js"
 
 const router = express.Router()
@@ -21,5 +22,6 @@ router.get("/products", getAdminProducts)
 router.delete("/products/:id", deleteAdminProduct)
 
 router.get("/orders", getAdminOrders)
+router.patch("/orders/:id/status", updateAdminOrderStatus)
 
 export default router

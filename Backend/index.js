@@ -31,6 +31,10 @@ app.use(cors({
 }))
 
 async function requireDatabase(req, res, next) {
+  if (req.method === "POST" && req.path === "/logout") {
+    return next()
+  }
+
   try {
     await dbConection()
     next()

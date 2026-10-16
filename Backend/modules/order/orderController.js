@@ -2,6 +2,7 @@ import orderModel from "./orderModel.js";
 import productModel from "../products/productModel.js";
 import historyModel from "../History/historyModel.js";
 import jwt from "jsonwebtoken";
+import { getJwtSecret } from "../../shared/auth/jwtSecret.js"
 
 // Returns the logged in user's id, or null if the token is missing or invalid
 function getUserId(req) {
@@ -9,7 +10,7 @@ function getUserId(req) {
     const token = req.cookies?.["Soler-system"];
     if (!token) return null;
 
-    const decoded = jwt.verify(token, "maxyy");
+    const decoded = jwt.verify(token, getJwtSecret());
     return decoded.id || decoded._id || decoded.userId || null;
   } catch (error) {
     // Invalid or expired token is treated as "not logged in"
@@ -110,12 +111,16 @@ export async function createOrder(req, res) {
     try {
       await historyModel.create({
         userId,
+        productId: product._id,
+        orderId: order._id,
         type: "Order",
         message: `You placed an order for ${product.title}. Quantity: ${orderQuantity}, Total: Rs. ${price * orderQuantity}`
       });
 
       await historyModel.create({
         userId: product.sellerId,
+        productId: product._id,
+        orderId: order._id,
         type: "Order",
         message: `New order received for your product: ${product.title}. Quantity: ${orderQuantity}, Total: Rs. ${price * orderQuantity}`
       });
@@ -254,6 +259,8 @@ export async function updateOrderStatus(req, res) {
     try {
       await historyModel.create({
         userId: order.userId,
+        productId: order.productId,
+        orderId: order._id,
         type: "Order",
         message: `Your order for ${order.productTitle} is now Confirmed`
       });

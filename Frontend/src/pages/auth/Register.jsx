@@ -51,7 +51,7 @@ function Register() {
     email: "",
     phone: "",
     password: "",
-    role: "",
+    role: "user",
   });
 
  async function registeration() {
@@ -190,7 +190,6 @@ function Register() {
             >
               <option value="user">Select Role</option>
               <option value="user">User</option>
-              <option value="admin">Admin</option>
             </select>
           </div>
         </div>

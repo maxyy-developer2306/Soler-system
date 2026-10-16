@@ -7,6 +7,16 @@ const historySchema = new mongoose.Schema({
     required: true
   },
 
+  productId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "product"
+  },
+
+  orderId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Order"
+  },
+
   type: {
     type: String,
     enum: ["Product", "Calculation", "Order"],

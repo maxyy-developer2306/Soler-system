@@ -1,6 +1,7 @@
 
 import profileModel from "./profile.model.js"
 import jwt from "jsonwebtoken"
+import { getJwtSecret } from "../../shared/auth/jwtSecret.js"
 
 function getUserId(req) {
     let token = req.cookies?.["Soler-system"]
@@ -9,7 +10,7 @@ function getUserId(req) {
         throw new Error("Please login first")
     }
 
-    let decoded = jwt.verify(token, "maxyy")
+    let decoded = jwt.verify(token, getJwtSecret())
     return decoded.id || decoded._id || decoded.userId
 }
 

@@ -1,7 +1,9 @@
 
 import jwt from "jsonwebtoken"
+import authModel from "../auth/auth.model.js"
+import { getJwtSecret } from "../../shared/auth/jwtSecret.js"
 
-export function verifyAdmin(req, res, next) {
+export async function verifyAdmin(req, res, next) {
   try {
     const token = req.cookies?.["Soler-system"]
 
@@ -12,16 +14,30 @@ export function verifyAdmin(req, res, next) {
       })
     }
 
-    const decoded = jwt.verify(token, "maxyy")
+    const decoded = jwt.verify(token, getJwtSecret())
+    const ownerEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase()
 
-    if (decoded.role !== "admin") {
-      return res.status(403).json({
+    if (!ownerEmail) {
+      return res.status(503).json({
         success: false,
-        msg: "Admin access only"
+        msg: "Owner admin email is not configured"
       })
     }
 
-    req.adminId = decoded.id
+    const admin = await authModel.findById(decoded.id).select("email role")
+
+    if (
+      !admin ||
+      admin.role !== "admin" ||
+      admin.email?.trim().toLowerCase() !== ownerEmail
+    ) {
+      return res.status(403).json({
+        success: false,
+        msg: "Owner access only"
+      })
+    }
+
+    req.adminId = admin._id
     next()
   } catch (error) {
     return res.status(401).json({

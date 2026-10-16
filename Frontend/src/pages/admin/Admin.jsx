@@ -9,7 +9,8 @@ import {
   Trash2,
   Search,
   LogOut,
-  Sun
+  Sun,
+  AlertTriangle
 } from "lucide-react"
 
 const API = (import.meta.env.VITE_backend_Url || "").replace(/\/$/, "")
@@ -31,6 +32,7 @@ export default function Admin() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [deletingProduct, setDeletingProduct] = useState("")
+  const [updatingOrder, setUpdatingOrder] = useState("")
 
   async function apiRequest(path, options = {}) {
     const response = await fetch(`${API}/api/admin${path}`, {
@@ -45,7 +47,9 @@ export default function Admin() {
     const data = await response.json()
 
     if (!response.ok || !data.success) {
-      throw new Error(data.msg || "Something went wrong")
+      const error = new Error(data.msg || "Something went wrong")
+      error.status = response.status
+      throw error
     }
 
     return data
@@ -69,6 +73,10 @@ export default function Admin() {
       setProducts(productsData.products || [])
       setOrders(ordersData.orders || [])
     } catch (error) {
+      if (error.status === 401 || error.status === 403) {
+        window.location.replace("/Login")
+        return
+      }
       setError(error.message || "Unable to load admin data")
     } finally {
       setLoading(false)
@@ -104,6 +112,52 @@ export default function Admin() {
       window.alert(error.message || "Unable to delete product")
     } finally {
       setDeletingProduct("")
+    }
+  }
+
+  async function updateOrderStatus(orderId, status) {
+    setUpdatingOrder(orderId)
+    setError("")
+
+    try {
+      const response = await apiRequest(`/orders/${orderId}/status`, {
+        method: "PATCH",
+        body: JSON.stringify({ status })
+      })
+
+      setOrders(currentOrders =>
+        currentOrders.map(order =>
+          order._id === orderId ? response.order : order
+        )
+      )
+
+      const updatedRequests = [apiRequest("/dashboard")]
+      if (status === "Cancelled") {
+        updatedRequests.push(apiRequest("/products"))
+      }
+
+      const [updated, productData] = await Promise.all(updatedRequests)
+      setDashboard(updated.dashboard || {})
+      if (productData) {
+        setProducts(productData.products || [])
+      }
+    } catch (error) {
+      setError(error.message || "Unable to update order status")
+    } finally {
+      setUpdatingOrder("")
+    }
+  }
+
+  async function logout() {
+    try {
+      await fetch(`${API}/user/logout`, {
+        method: "POST",
+        credentials: "include"
+      })
+    } catch {
+      setError("Could not confirm logout with the server.")
+    } finally {
+      window.location.assign("/Login")
     }
   }
 
@@ -175,6 +229,11 @@ export default function Admin() {
       title: "Pending Orders",
       value: dashboard.pendingOrders,
       icon: RefreshCw
+    },
+    {
+      title: "Low Stock (5 or less)",
+      value: dashboard.lowStockProducts,
+      icon: AlertTriangle
     }
   ]
 
@@ -221,13 +280,11 @@ export default function Admin() {
 
           <div className="hidden border-t border-[#e5e5e5] p-3 md:block">
             <button
-              onClick={() => {
-                window.location.href = "/"
-              }}
+              onClick={logout}
               className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-[#737373] hover:bg-[#fafafa] hover:text-[#171717]"
             >
               <LogOut size={17} />
-              Back to Website
+              Log out
             </button>
           </div>
         </aside>
@@ -279,7 +336,7 @@ export default function Admin() {
                       </p>
                     </div>
 
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
                       {stats.map(item => {
                         const Icon = item.icon
 
@@ -365,7 +422,7 @@ export default function Admin() {
 
                     <div className="rounded-xl border border-[#e5e5e5] bg-white p-5">
                       <p className="text-sm text-[#737373]">
-                        Non-cancelled order value
+                        Non-cancelled order value (not payment-verified)
                       </p>
                       <p className="mt-2 text-2xl font-semibold">
                         {money(dashboard.totalSales)}
@@ -584,9 +641,33 @@ export default function Admin() {
                                 {formatDate(order.createdAt)}
                               </td>
                               <td className="px-5 py-4">
-                                <span className={`rounded-md px-2 py-1 text-xs ${statusStyle(order.status)}`}>
-                                  {order.status || "Pending"}
-                                </span>
+                                <select
+                                  value={order.status || "Pending"}
+                                  onChange={event =>
+                                    updateOrderStatus(order._id, event.target.value)
+                                  }
+                                  disabled={
+                                    updatingOrder === order._id ||
+                                    ["Delivered", "Cancelled"].includes(order.status)
+                                  }
+                                  className={`rounded-md border border-[#e5e5e5] px-2 py-1 text-xs ${statusStyle(order.status)} disabled:cursor-not-allowed disabled:opacity-70`}
+                                >
+                                  <option value={order.status || "Pending"}>
+                                    {order.status || "Pending"}
+                                  </option>
+                                  {(order.status === "Pending"
+                                    ? ["Confirmed", "Cancelled"]
+                                    : order.status === "Confirmed"
+                                      ? ["Shipped", "Cancelled"]
+                                      : order.status === "Shipped"
+                                        ? ["Delivered"]
+                                        : []
+                                  ).map(status => (
+                                    <option key={status} value={status}>
+                                      {status}
+                                    </option>
+                                  ))}
+                                </select>
                               </td>
                             </tr>
                           ))}

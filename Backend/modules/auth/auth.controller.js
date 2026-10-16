@@ -1,6 +1,7 @@
 import authModel from "./auth.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
+import { getJwtSecret } from "../../shared/auth/jwtSecret.js"
 
 const isProduction = process.env.NODE_ENV === "production" || process.env.VERCEL === "1"
 const authCookieOptions = {
@@ -16,8 +17,18 @@ const authCookieOptions = {
 
 export async function Registeration(req,res) {
   let { name, email, phone, password, role } = req.body;
+  const jwtSecret = getJwtSecret();
 
-  let existingEmail = await authModel.findOne({ email: email });
+  if (role === "admin") {
+    return res.status(403).json({
+      success: false,
+      msg: "Admin accounts can only be assigned by the owner"
+    });
+  }
+
+  const normalizedEmail = email?.trim().toLowerCase();
+
+  let existingEmail = await authModel.findOne({ email: normalizedEmail });
   if (existingEmail) {
     return res.json({ success: false, msg: "This email is already exist" });
   }
@@ -27,31 +38,25 @@ export async function Registeration(req,res) {
     return res.json({success:false, msg:"This phone number is already taken"})
   }
 
-  if (role == "admin") {
-    let existingAdmin = await authModel.findOne({ role: "admin" });
-    if(existingAdmin){
-        return res.json({success:false, msg:"The one admin is already present"})
-    }
-   }
     let hashPassword = await bcrypt.hash(password, 10);
 
     let registerUser = await authModel.create({
       name,
-      email,
+      email: normalizedEmail,
       phone,
       password: hashPassword,
-      role
+      role: "user"
     });
 
 
     let token = {
         id: registerUser._id,
-        role: registerUser.role
+        role: "user"
     }
 
      console.log(token, "The token is here")
 
-     let tokenData = jwt.sign(token, "maxyy");
+    let tokenData = jwt.sign(token, jwtSecret, { expiresIn: "7d" });
     res.cookie("Soler-system", tokenData, authCookieOptions)
  
     return res.json({
@@ -68,8 +73,25 @@ export async function Registeration(req,res) {
 
 export async function login(req,res){
   let {email, password, role} = req.body;
+  const jwtSecret = getJwtSecret();
+  const normalizedEmail = email?.trim().toLowerCase();
+  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
 
-  let existingData = await authModel.findOne({email,role})
+  if (role === "admin" && !adminEmail) {
+    return res.status(503).json({
+      success: false,
+      msg: "Owner admin email is not configured"
+    });
+  }
+
+  if (role === "admin" && normalizedEmail !== adminEmail) {
+    return res.status(403).json({
+      success: false,
+      msg: "This account is not authorized for owner access"
+    });
+  }
+
+  let existingData = await authModel.findOne({ email: normalizedEmail, role })
   if(!existingData){
     return res.json({success:false, msg:"The email or role is not found"})
   }
@@ -85,7 +107,7 @@ export async function login(req,res){
     role:existingData.role
   }
 
-  let tokenData = jwt.sign(token, "maxyy")
+  let tokenData = jwt.sign(token, jwtSecret, { expiresIn: "7d" })
   res.cookie("Soler-system", tokenData, authCookieOptions)
 
   return res.json({success:true, msg:"You are logged successfully"})
@@ -109,7 +131,7 @@ export async function authCheck(req, res) {
       })
     }
 
-    let decoded = jwt.verify(token, "maxyy")
+    let decoded = jwt.verify(token, getJwtSecret())
     let user = await authModel.findById(decoded.id)
 
     if (!user) {
@@ -134,4 +156,12 @@ export async function authCheck(req, res) {
       msg: "Invalid or expired login"
     })
   }
+}
+
+export function logout(req, res) {
+  res.clearCookie("Soler-system", authCookieOptions)
+  return res.status(200).json({
+    success: true,
+    msg: "Logged out successfully"
+  })
 }
