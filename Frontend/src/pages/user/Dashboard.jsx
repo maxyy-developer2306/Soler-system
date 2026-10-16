@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
+import { API_BASE } from "../../config/api";
 import {
   Package,
   Boxes,
@@ -24,7 +25,7 @@ function Dashboard() {
       setError("");
 
       const res = await axios.get(
-        `${import.meta.env.VITE_backend_Url}/api/products/my-products`,
+        `${API_BASE}/api/products/my-products`,
         { withCredentials: true }
       );
 

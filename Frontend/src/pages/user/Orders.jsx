@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { API_BASE } from "../../config/api";
 
 function Orders() {
   const [orders, setOrders] = useState([]);
@@ -7,7 +8,7 @@ function Orders() {
   const [error, setError] = useState("");
   const [updatingId, setUpdatingId] = useState("");
 
-  const API = import.meta.env.VITE_backend_Url;
+  const API = API_BASE;
 
   async function getOrders() {
     try {

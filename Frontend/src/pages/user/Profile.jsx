@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
 import { Link } from "react-router-dom"
+import { API_BASE } from "../../config/api"
 
 function Profile() {
     const [profile, setProfile] = useState(null)
@@ -12,7 +13,7 @@ function Profile() {
         async function fetchProfile() {
             try {
                 const response = await axios.get(
-                    `${import.meta.env.VITE_backend_Url}/api/profile`,
+                    `${API_BASE}/api/profile`,
                     { withCredentials: true }
                 )
 

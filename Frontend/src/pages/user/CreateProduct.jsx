@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { ImagePlus, Sun } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_BASE } from "../../config/api";
 
 function CreateProduct() {
   let navigate = useNavigate();
@@ -24,7 +25,7 @@ function CreateProduct() {
     async function checkLogin() {
       try {
         let response = await axios.get(
-          import.meta.env.VITE_backend_Url + "/user/check",
+          API_BASE + "/user/check",
           { withCredentials: true },
         );
 
@@ -54,7 +55,7 @@ function CreateProduct() {
       formData.append("quantity", product.quantity);
 
       let response = await axios.post(
-        import.meta.env.VITE_backend_Url + "/api/products/create",
+        API_BASE + "/api/products/create",
         formData,
         {
           withCredentials: true,

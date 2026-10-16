@@ -29,6 +29,7 @@ import { Link } from "react-router-dom";
 import Hero from "../components/Hero";
 import Footer from "../components/Footer";
 import MiniChatbot from "../components/MiniChatbot";
+import { API_BASE } from "../config/api";
 
 function Home() {
   const [items, setItems] = useState([
@@ -64,7 +65,7 @@ function Home() {
     async function getProducts() {
       try {
         const response = await fetch(
-          import.meta.env.VITE_backend_Url + "/api/products/products"
+          API_BASE + "/api/products/products"
         );
 
         const data = await response.json();

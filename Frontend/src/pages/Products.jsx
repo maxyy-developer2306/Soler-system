@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, User, ArrowLeft, Package, X } from "lucide-react";
 import axios from "axios";
+import { API_BASE } from "../config/api";
 
 function Products() {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ function Products() {
     async function getProducts() {
       try {
         const response = await axios.get(
-          import.meta.env.VITE_backend_Url + "/api/products/products"
+          API_BASE + "/api/products/products"
         );
 
         setProducts(response.data.products || []);

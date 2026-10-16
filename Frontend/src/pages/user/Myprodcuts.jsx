@@ -10,6 +10,7 @@ import {
   X,
   AlertTriangle,
 } from "lucide-react";
+import { API_BASE } from "../../config/api";
 
 function Myprodcuts() {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ function Myprodcuts() {
       setError("");
 
       const response = await axios.get(
-        `${import.meta.env.VITE_backend_Url}/api/products/my-products`,
+        `${API_BASE}/api/products/my-products`,
         { withCredentials: true }
       );
 
@@ -50,7 +51,7 @@ function Myprodcuts() {
     async function checkLogin() {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_backend_Url}/user/check`,
+          `${API_BASE}/user/check`,
           { withCredentials: true }
         );
 
@@ -80,7 +81,7 @@ function Myprodcuts() {
       setMessage("");
 
       const response = await axios.delete(
-        `${import.meta.env.VITE_backend_Url}/api/products/delete/${id}`,
+        `${API_BASE}/api/products/delete/${id}`,
         { withCredentials: true }
       );
 

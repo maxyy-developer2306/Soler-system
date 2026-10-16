@@ -3,6 +3,7 @@ import { LogIn, Mail, Lock, UserCog, Sun } from "lucide-react";
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE } from "../../config/api";
 
 /* Panel Navy #0B1F3A | Cell Blue #1E4E8C | Sun #FFC233 | Sky Wash #EAF2F8 */
 
@@ -60,7 +61,7 @@ function Login() {
 
     try {
       const response = await axios.post(
-        import.meta.env.VITE_backend_Url + "/user/login",
+        API_BASE + "/user/login",
         login,
         { withCredentials: true }
       )

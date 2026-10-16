@@ -12,8 +12,9 @@ import {
   Sun,
   AlertTriangle
 } from "lucide-react"
+import { API_BASE } from "../../config/api"
 
-const API = (import.meta.env.VITE_backend_Url || "").replace(/\/$/, "")
+const API = API_BASE
 
 const menuItems = [
   { name: "Dashboard", icon: LayoutDashboard },

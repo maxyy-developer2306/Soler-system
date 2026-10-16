@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from "react"
 import { Calendar, Clock, History as HistoryIcon } from "lucide-react"
+import { API_BASE } from "../../config/api"
 
 function History() {
   const [history, setHistory] = useState([])
@@ -11,7 +12,7 @@ function History() {
     async function fetchHistory() {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_backend_Url}/api/history`,
+          `${API_BASE}/api/history`,
           {
             method: "GET",
             credentials: "include"

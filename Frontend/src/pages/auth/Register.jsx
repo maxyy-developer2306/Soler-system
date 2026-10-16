@@ -3,6 +3,7 @@ import { UserPlus, User, Mail, Lock, Phone, UserCog, Sun } from "lucide-react";
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE } from "../../config/api";
 
 /* Panel Navy #0B1F3A | Cell Blue #1E4E8C | Sun #FFC233 | Sky Wash #EAF2F8 */
 
@@ -57,7 +58,7 @@ function Register() {
  async function registeration() {
   try {
     let responce = await axios.post(
-      import.meta.env.VITE_backend_Url + "/user/register",
+      API_BASE + "/user/register",
       formdata,{
         withCredentials: true
       }

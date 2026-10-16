@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { ImagePlus, Sun } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
+import { API_BASE } from '../../config/api'
 
 function EditProduct() {
   const navigate = useNavigate()
@@ -25,7 +26,7 @@ function EditProduct() {
     async function checkLogin() {
       try {
         const response = await axios.get(
-          import.meta.env.VITE_backend_Url + "/user/check",
+          API_BASE + "/user/check",
           { withCredentials: true }
         )
 
@@ -44,7 +45,7 @@ function EditProduct() {
     async function getProduct() {
       try {
         const response = await axios.get(
-          import.meta.env.VITE_backend_Url + "/api/products/" + id,
+          API_BASE + "/api/products/" + id,
           { withCredentials: true }
         )
 
@@ -76,7 +77,7 @@ function EditProduct() {
       formData.append("quantity", product.quantity)
 
       const response = await axios.put(
-        import.meta.env.VITE_backend_Url + "/api/products/edit/" + id,
+        API_BASE + "/api/products/edit/" + id,
         formData,
         {
           withCredentials: true

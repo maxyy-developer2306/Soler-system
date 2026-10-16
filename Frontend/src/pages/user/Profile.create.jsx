@@ -2,6 +2,7 @@
 import { useState } from "react"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
+import { API_BASE } from "../../config/api"
 
 function ProfileCreate() {
     const navigate = useNavigate()
@@ -39,7 +40,7 @@ function ProfileCreate() {
 
         try {
             await axios.put(
-                `${import.meta.env.VITE_backend_Url}/api/profile/update`,
+                `${API_BASE}/api/profile/update`,
                 form,
                 { withCredentials: true }
             )

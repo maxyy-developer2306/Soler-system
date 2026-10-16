@@ -12,8 +12,9 @@ import {
   AlertCircle
 } from "lucide-react";
 import axios from "axios";
+import { API_BASE } from "../../config/api";
 
-const API = import.meta.env.VITE_backend_Url;
+const API = API_BASE;
 
 const styles = `
 @keyframes pm-fade {
