@@ -1,242 +1,202 @@
-import React, { useState } from "react";
-import { GoogleGenAI } from "@google/genai";
+// MiniChatbot.jsx
+// Frontend-only chatbot: calls Gemini directly. Black background, white text.
+import { useState, useRef, useEffect } from "react";
 
-const ai = new GoogleGenAI({
-  apiKey: import.meta.env.VITE_GEMINI_API_KEY,
-});
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
-// Models are tried from top to bottom. Add or remove names here as needed.
+// Models are tried in order. If one fails, the next one is used.
+// Fast and cheap models first, bigger models last.
 const MODELS = [
-  "gemini-flash-lite-latest", // tried first
-  "gemini-3.8-flash",
-  "gemini-3.8-flash-lite",
-  "gemini-3.7-flash",
-  "gemini-3.5-flash",
-  "gemini-3.1-flash",
-  "gemini-3-flash",
   "gemini-flash-latest",
+  "gemini-flash-lite-latest",
   "gemini-2.5-flash",
   "gemini-2.5-flash-lite",
   "gemini-2.0-flash",
   "gemini-2.0-flash-lite",
+  "gemini-2.0-flash-001",
+  "gemini-2.0-flash-lite-001",
+  "gemini-3-flash-preview",
+  "gemini-2.5-pro",
+  "gemini-pro-latest",
 ];
 
-// Models that returned 404 (removed or wrong name) are skipped next time
-const deadModels = new Set();
-
-// Change this to your real website / company name
-const SITE_NAME = "Solar Calculator Website";
-
-// Owner contact details (shared only when the user asks for them)
-const OWNER_EMAIL = "wk0644365@gmail.com";
-const OWNER_WHATSAPP = "03155988771";
-
-// Everything the chatbot should know about the website
+// Instructions that tell the bot about the website
 const SYSTEM_PROMPT = `
-You are the friendly AI assistant of "${SITE_NAME}".
-
-ABOUT THE WEBSITE:
-- The website helps people calculate their household electricity usage and find out what size of solar system they need.
-- It has an "All Appliances Calculator" page.
-- On that page the user sees a table of household appliances. For each appliance the user enters:
-  1. Quantity (how many of that appliance)
-  2. Days (how many days per month it is used)
-  3. Hours/Day (how many hours per day it runs)
-- The user then clicks the "Calculate" button.
-
-APPLIANCES AND THEIR FIXED WATTAGE IN THE CALCULATOR:
-- Lights: 24W
-- Air Conditioner: 1500W
-- Refrigerator: 150W
-- Fan: 80W
-- Television: 120W
-- Computer: 200W
-- Iron: 1000W
-- Kitchen Appliance: 1000W
-- Microwave: 1200W
-- Washing Machine: 500W
-
-HOW THE CALCULATION WORKS:
-- Units (kWh) for each appliance = (Watts x Quantity x Days x Hours per day) / 1000
-- Monthly Usage = sum of the units of all appliances (estimated for 30 days)
-- Daily Usage = Monthly Usage / 30
-- Connected Load = sum of (Watts x Quantity) of all appliances
-- Recommended Solar System (kW) = Daily Usage / 5 (5 peak sun hours per day) / 0.8 (20% system losses)
-- Number of Solar Panels = Recommended Solar System / 0.55, rounded up (each panel is 550W)
-
-RESULTS SHOWN TO THE USER:
-- Daily Usage (kWh)
-- Monthly Usage (kWh)
-- Connected Load (W)
-- Recommended Solar size (kW) and the number of 550W panels needed
-
-IMPORTANT NOTES:
-- The results are estimates. Real electricity use and the right solar system size can differ, so for an exact design the user should contact the owner.
-- If the user asks how to use the calculator, explain it step by step with full details.
-- If the user asks about something that is not on the website, say clearly that you do not have that information and suggest contacting the owner. Never invent prices, offers, addresses or services.
-
-OWNER CONTACT (share ONLY when the user asks to contact the owner/company, wants a quote, or needs help beyond the calculator):
-- Gmail: ${OWNER_EMAIL}
-- WhatsApp: ${OWNER_WHATSAPP}
-
-GENERAL BEHAVIOR:
-- You can also answer general questions about solar energy, solar panels, batteries, inverters, electricity, appliances, technology, programming, education and everyday topics. Do not restrict yourself to the website only.
-- Reply in the same language the user writes in (English, Urdu, Roman Urdu, etc.).
-- Keep answers simple, clear and easy to understand.
+You are the helpful assistant of a solar and electricity calculator website.
+The website has an "All Appliances" calculator page where users select
+their home appliances and the site calculates the total load, units and
+the solar system size they need.
+When asked, explain the website and its features in detail.
+If someone wants to contact the company owner, share:
+Gmail: wk0644365@gmail.com
+WhatsApp: 03155988771
+Reply in the same language the user writes in (English, Urdu or Roman Urdu).
 `;
 
-// Checks an error object for a specific HTTP status code
-const hasCode = (error, code) =>
-  error?.status === code ||
-  error?.code === code ||
-  String(error?.message).includes(String(code));
+async function askGemini(messages) {
+  // Convert our messages to the Gemini format
+  const contents = messages.map((m) => ({
+    role: m.role === "user" ? "user" : "model",
+    parts: [{ text: m.text }],
+  }));
 
-// On these errors we move on to the next model
-const shouldTryNext = (error) =>
-  hasCode(error, 503) || // server busy
-  hasCode(error, 429) || // rate limit
-  hasCode(error, 404) || // model removed or wrong name
-  hasCode(error, 500); // server error
+  let lastError = "Unknown error";
 
-function MiniChatbot() {
-  const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const [messages, setMessages] = useState([
-    {
-      sender: "bot",
-      text: "Hello! 👋 I am your AI Assistant. How can I help you?",
-    },
-  ]);
-
-  // Sends the message to Gemini, falling back to the next model on failure
-  const getAIResponse = async (userMessage) => {
-    let lastError;
-
-    for (const model of MODELS) {
-      if (deadModels.has(model)) continue;
-
-      try {
-        const response = await ai.models.generateContent({
-          model,
-          contents: userMessage,
-          config: {
-            systemInstruction: SYSTEM_PROMPT,
+  for (const model of MODELS) {
+    try {
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-goog-api-key": API_KEY,
           },
-        });
-
-        console.log("Answered by:", model);
-        return response.text;
-      } catch (error) {
-        console.log(`Model ${model} failed:`, error);
-        lastError = error;
-
-        if (hasCode(error, 404)) {
-          deadModels.add(model);
+          body: JSON.stringify({
+            systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+            contents,
+          }),
         }
+      );
 
-        // Errors like an invalid API key will fail on every model, so stop
-        if (!shouldTryNext(error)) {
-          throw error;
-        }
+      const data = await res.json();
+
+      if (!res.ok) {
+        lastError = data?.error?.message || `Error ${res.status}`;
+        console.error(`Model ${model} failed:`, lastError);
+
+        // 401/403 means the API key itself is bad (invalid or leaked).
+        // Other models will fail too, so stop here.
+        if (res.status === 401 || res.status === 403) break;
+
+        continue; // 404, 429, 500, 503 etc: try the next model
       }
-    }
 
-    throw lastError || new Error("No model available");
-  };
+      const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (reply) return reply;
+
+      // Empty reply (for example blocked by safety filters): try the next model
+      lastError = "Empty reply from " + model;
+    } catch (err) {
+      // Network error: try the next model
+      lastError = err.message;
+    }
+  }
+
+  throw new Error(lastError);
+}
+
+export default function MiniChatbot() {
+  const [open, setOpen] = useState(false);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [messages, setMessages] = useState([
+    { role: "bot", text: "Hello! Ask me anything about our solar calculator." },
+  ]);
+  const bottomRef = useRef(null);
+
+  // Scroll to the latest message
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, open]);
 
   const sendMessage = async () => {
-    if (!message.trim() || loading) return;
+    const text = input.trim();
+    if (!text || loading) return;
 
-    const userMessage = message.trim();
-
-    setMessages((old) => [...old, { sender: "user", text: userMessage }]);
-    setMessage("");
+    const updated = [...messages, { role: "user", text }];
+    setMessages(updated);
+    setInput("");
     setLoading(true);
 
     try {
-      const reply = await getAIResponse(userMessage);
-      setMessages((old) => [...old, { sender: "bot", text: reply }]);
-    } catch (error) {
-      console.log("Gemini Error:", error);
-
-      let text = "Sorry, I could not get a response. Please try again.";
-
-      if (hasCode(error, 429)) {
-        text = "Too many requests right now. Please try again in a little while.";
-      } else if (hasCode(error, 503)) {
-        text = "The server is busy. Please try again in a moment.";
-      }
-
-      setMessages((old) => [...old, { sender: "bot", text }]);
+      const reply = await askGemini(updated);
+      setMessages([...updated, { role: "bot", text: reply }]);
+    } catch (err) {
+      console.error(err);
+      setMessages([
+        ...updated,
+        { role: "bot", text: "Sorry, something went wrong. Please try again." },
+      ]);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
-  };
-
-  // Send the message when Enter is pressed
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") sendMessage();
   };
 
   return (
-    <div className="fixed bottom-5 right-5 z-50">
+    <div style={{ position: "fixed", bottom: 20, right: 20, zIndex: 9999 }}>
       {open && (
-        <div className="w-80 h-96 bg-black border border-slate-700 rounded-lg shadow-lg flex flex-col mb-3">
-          {/* Header */}
-          <div className="bg-slate-900 text-white p-4 rounded-t-lg flex justify-between items-center border-b border-slate-700">
-            <div>
-              <h2 className="font-bold">AI Assistant</h2>
-              <p className="text-xs text-slate-300">Ask me anything</p>
-            </div>
-
-            <button onClick={() => setOpen(false)} className="text-xl">
-              ×
-            </button>
+        <div
+          style={{
+            width: 320,
+            height: 420,
+            background: "#000",
+            color: "#fff",
+            borderRadius: 12,
+            display: "flex",
+            flexDirection: "column",
+            marginBottom: 10,
+            boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+            overflow: "hidden",
+          }}
+        >
+          <div style={{ padding: 12, borderBottom: "1px solid #333", fontWeight: 600 }}>
+            Solar Assistant
           </div>
 
-          {/* Chat area: black background */}
-          <div className="flex-1 overflow-y-auto p-3 bg-black">
-            {messages.map((item, index) => (
+          <div style={{ flex: 1, overflowY: "auto", padding: 12 }}>
+            {messages.map((m, i) => (
               <div
-                key={index}
-                className={`mb-3 flex ${
-                  item.sender === "user" ? "justify-end" : "justify-start"
-                }`}
+                key={i}
+                style={{
+                  textAlign: m.role === "user" ? "right" : "left",
+                  marginBottom: 10,
+                }}
               >
-                <div
-                  className={`p-2 rounded-lg max-w-[80%] text-sm whitespace-pre-wrap ${
-                    item.sender === "user"
-                      ? "bg-white text-black"
-                      : "bg-black text-white font-medium border border-slate-700"
-                  }`}
+                <span
+                  style={{
+                    display: "inline-block",
+                    padding: "8px 12px",
+                    borderRadius: 10,
+                    background: m.role === "user" ? "#2563eb" : "#111",
+                    color: "#fff",
+                    maxWidth: "85%",
+                    whiteSpace: "pre-wrap",
+                  }}
                 >
-                  {item.text}
-                </div>
+                  {m.text}
+                </span>
               </div>
             ))}
-
-            {loading && (
-              <div className="text-sm text-slate-400">Thinking...</div>
-            )}
+            {loading && <div style={{ color: "#aaa" }}>Typing...</div>}
+            <div ref={bottomRef} />
           </div>
 
-          {/* Input area */}
-          <div className="p-3 border-t border-slate-700 bg-black flex gap-2">
+          <div style={{ display: "flex", borderTop: "1px solid #333" }}>
             <input
-              type="text"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Ask anything..."
-              className="flex-1 bg-slate-900 text-white placeholder-slate-400 border border-slate-700 rounded-lg px-3 py-2 outline-none"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+              placeholder="Type your question..."
+              style={{
+                flex: 1,
+                padding: 10,
+                background: "#000",
+                color: "#fff",
+                border: "none",
+                outline: "none",
+              }}
             />
-
             <button
               onClick={sendMessage}
               disabled={loading}
-              className="bg-white text-black px-4 rounded-lg font-medium disabled:opacity-50"
+              style={{
+                padding: "0 16px",
+                background: "#2563eb",
+                color: "#fff",
+                border: "none",
+                cursor: "pointer",
+              }}
             >
               Send
             </button>
@@ -244,17 +204,21 @@ function MiniChatbot() {
         </div>
       )}
 
-      {/* Floating open button */}
-      {!open && (
-        <button
-          onClick={() => setOpen(true)}
-          className="bg-slate-900 text-white w-14 h-14 rounded-full shadow-lg text-xl"
-        >
-          💬
-        </button>
-      )}
+      <button
+        onClick={() => setOpen(!open)}
+        style={{
+          width: 56,
+          height: 56,
+          borderRadius: "50%",
+          background: "#000",
+          color: "#fff",
+          border: "1px solid #444",
+          fontSize: 24,
+          cursor: "pointer",
+        }}
+      >
+        {open ? "×" : "💬"}
+      </button>
     </div>
   );
 }
-
-export default MiniChatbot;

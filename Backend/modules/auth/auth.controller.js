@@ -19,8 +19,8 @@ export async function Registeration(req,res) {
     return res.json({success:false, msg:"This phone number is already taken"})
   }
 
-  if (role == "Admin") {
-    let existingAdmin = await authModel.findOne({ role: "Admin" });
+  if (role == "admin") {
+    let existingAdmin = await authModel.findOne({ role: "admin" });
     if(existingAdmin){
         return res.json({success:false, msg:"The one admin is already present"})
     }
@@ -81,4 +81,49 @@ export async function login(req,res){
   res.cookie("Soler-system", tokenData)
 
   return res.json({success:true, msg:"You are logged successfully"})
+}
+
+
+
+
+
+
+
+
+export async function authCheck(req, res) {
+  try {
+    let token = req.cookies["Soler-system"]
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        msg: "Please login first"
+      })
+    }
+
+    let decoded = jwt.verify(token, "maxyy")
+    let user = await authModel.findById(decoded.id)
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        msg: "User not found"
+      })
+    }
+
+    return res.status(200).json({
+      success: true,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    })
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      msg: "Invalid or expired login"
+    })
+  }
 }

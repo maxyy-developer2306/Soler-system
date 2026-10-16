@@ -1,65 +1,63 @@
-import React from "react";
-import { Sun } from "lucide-react";
+
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-
 function Navbar() {
 
   let location = useLocation()
-  if(location.pathname=="/Calculate" ||
-     location.pathname=="/Calculate/all" ||
-     location.pathname=="/Calculate/refrigerator" ||
-     location.pathname=="/Calculate/fan" ||
-     location.pathname=="/Calculate/tv" ||
-     location.pathname=="/Calculate/computer" ||
-     location.pathname=="/Calculate/iron" ||
-     location.pathname=="/Calculate/kitchen" ||
-     location.pathname=="/Calculate/microwave" ||
-     location.pathname=="/Calculate/washing-machine" ||
-     location.pathname=="/Calculate/ac" 
-    )
-    
-    return null
 
+  if(location.pathname=="/Products_managment" ||
+     location.pathname=="/Sidbar" ||
+     location.pathname=="/dashboard" ||
+     location.pathname=="/CreateProduct" ||
+     location.pathname=="/history" ||
+     location.pathname=="/settings" ||
+     location.pathname=="/Myprodcuts" ||
+     location.pathname=="/profile" ||
+     location.pathname=="/Dashboard" ||
+     location.pathname=="/Orders" ||
+     location.pathname=="/Login" ||
+     location.pathname=="/register" ||
+     location.pathname.startsWith("/EditProduct/") 
+   
+
+    ) return null
   return (
-    <div className="flex items-center justify-between p-4 border-b">
-      <div className="flex items-center">
-        <Sun size={24} />
-        <h2 className="ml-2 font-bold text-xl">Solar System</h2>
-      </div>
+    <nav className="sticky top-0 z-50 flex items-center justify-between bg-[#0B1F3A] px-6 py-4 text-white shadow-md">
 
-      <div className="flex items-center">
-        <Link to="/" className="mr-6 text-sm cursor-pointer">
+      <Link to="/" className="text-xl font-bold">
+        Solar <span className="text-[#FFC233]">System</span>
+      </Link>
+
+      <div className="flex items-center gap-6">
+        <Link to="/" className="hover:text-[#FFC233]">
           Home
         </Link>
 
-        <Link to="/HowItWorks" className="mr-6 text-sm cursor-pointer">
+        <Link to="/HowItWorks" className="hover:text-[#FFC233]">
           How It Works
         </Link>
 
-        <Link to="/products" className="mr-6 text-sm cursor-pointer">
+        <Link to="/products" className="hover:text-[#FFC233]">
           Products
         </Link>
 
-        <Link to="/about" className="mr-6 text-sm cursor-pointer">
+        <Link to="/about" className="hover:text-[#FFC233]">
           About
         </Link>
+      </div>
+
+      <div className="flex items-center gap-3">
+     
 
         <Link
-          to="/login"
-          className="mr-2 border px-3 py-1.5 rounded text-sm cursor-pointer"
+          to="/Login"
+          className="rounded-lg bg-[#FFC233] px-4 py-2 font-semibold text-[#0B1F3A] hover:bg-[#FFD25E]"
         >
-          Login
-        </Link>
-
-        <Link
-          to="/Register"
-          className="bg-black text-white px-3 py-1.5 rounded text-sm cursor-pointer"
-        >
-          Sign Up
+          Swith to saller
         </Link>
       </div>
-    </div>
+
+    </nav>
   );
 }
 

@@ -1,5 +1,5 @@
 import express from "express"
-import { Registeration, login } from "./auth.controller.js"
+import { Registeration, login, authCheck  } from "./auth.controller.js"
 
 
 let route = express.Router()
@@ -7,6 +7,7 @@ let route = express.Router()
 
 route.post("/register", Registeration)
 route.post("/login", login)
+route.get("/check", authCheck)
 
 
 
