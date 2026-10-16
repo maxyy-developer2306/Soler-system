@@ -11,7 +11,6 @@ import dotenv from "dotenv"
 import cookieParser from "cookie-parser"
 
 dotenv.config()
-dbConection()
 
 const allowedOrigins = [
   "https://soler-system-j2sf.vercel.app",
@@ -31,12 +30,25 @@ app.use(cors({
   credentials: true,
 }))
 
-app.use("/user", userRoute)
-app.use("/api/products", productRoute)
-app.use("/api/history", historyRoute)
-app.use("/api/admin", adminRoutes)
+async function requireDatabase(req, res, next) {
+  try {
+    await dbConection()
+    next()
+  } catch (error) {
+    console.error("Database connection error:", error.message)
+    res.status(503).json({
+      success: false,
+      msg: "Database is temporarily unavailable",
+    })
+  }
+}
+
+app.use("/user", requireDatabase, userRoute)
+app.use("/api/products", requireDatabase, productRoute)
+app.use("/api/history", requireDatabase, historyRoute)
+app.use("/api/admin", requireDatabase, adminRoutes)
 // app.use("/api/profile", profileRoute)
-app.use("/api/orders", orderRoute)
+app.use("/api/orders", requireDatabase, orderRoute)
 
 
 app.get("/", (req, res) => {

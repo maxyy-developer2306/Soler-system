@@ -54,24 +54,27 @@ function Login() {
     role: "",
   });
 
-  async function Loginuser(){
-    let responce = await axios.post(import.meta.env.VITE_backend_Url + "/user/login", login,
-      {
-        withCredentials:true
+  async function Loginuser(event) {
+    event.preventDefault()
+    setMsg("")
+
+    try {
+      const response = await axios.post(
+        import.meta.env.VITE_backend_Url + "/user/login",
+        login,
+        { withCredentials: true }
+      )
+
+      setMsg(response.data.msg)
+      if (response.data.success) {
+        if (login.role === "admin") {
+          navigate("/Admin")
+        } else if (login.role === "user") {
+          navigate("/Products_managment")
+        }
       }
-    )
-    console.log(responce)
-    setLogin(responce.data)
-     setMsg(responce.data.msg);
-    if(responce.data.success==true){
-      if(login.role=="admin"){
-        navigate("/Admin")
-      }else if(login.role=="user"){
-        navigate("/Products_managment")
-      }
-      else {
-    console.log("Role match nahi hua:", login.role);
-  }
+    } catch (error) {
+      setMsg(error.response?.data?.msg || "Login service is unavailable. Please try again.")
     }
   }
  
@@ -95,6 +98,7 @@ function Login() {
           </p>
         </div>
 
+        <div onSubmit={Loginuser}>
         <div className="mb-4">
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
             Email
@@ -153,12 +157,13 @@ function Login() {
           </div>
         </div>
 
-        <button 
-       onClick={Loginuser}
+        <button
+        type="submit"
         className="sp-focus h-9 cursor-pointer w-full flex items-center justify-center gap-2 rounded-md bg-[#0B1F3A] text-sm font-medium text-white hover:bg-[#12305a] active:scale-[.98] transition">
           <LogIn size={16} />
           Login
         </button>
+        </div>
 
          {msg && <p className="sp-msg text-red-600 mt-3 text-center text-sm">{msg}</p>}
 
