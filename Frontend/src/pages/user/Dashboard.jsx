@@ -65,7 +65,7 @@ function Dashboard() {
   ];
 
   return (
-    <div className="ml-64 min-h-screen bg-white px-4 py-8 md:px-8">
+    <div className="min-h-screen min-w-0 bg-white px-4 py-6 sm:px-6 sm:py-8 md:px-8">
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">

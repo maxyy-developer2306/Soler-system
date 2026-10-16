@@ -105,7 +105,7 @@ function Myprodcuts() {
   }
 
   return (
-    <div className="ml-64 min-h-screen bg-[#EAF2F8] p-4 md:p-8">
+    <div className="min-h-screen min-w-0 bg-[#EAF2F8] p-4 sm:p-6 md:p-8">
       <div className="mx-auto max-w-6xl">
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
           <div>

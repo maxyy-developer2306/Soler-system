@@ -124,12 +124,12 @@ export default function MiniChatbot() {
   };
 
   return (
-    <div style={{ position: "fixed", bottom: 20, right: 20, zIndex: 9999 }}>
+    <div style={{ position: "fixed", bottom: 12, right: 12, zIndex: 9999 }}>
       {open && (
         <div
           style={{
-            width: 320,
-            height: 420,
+            width: "min(320px, calc(100vw - 24px))",
+            height: "min(420px, calc(100dvh - 96px))",
             background: "#000",
             color: "#fff",
             borderRadius: 12,

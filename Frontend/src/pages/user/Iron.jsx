@@ -274,11 +274,11 @@ function Iron() {
                 return (
                   <li
                     key={a.id}
-                    className={`grid grid-cols-2 gap-3 px-5 py-4 transition-colors duration-500 md:grid-cols-[minmax(0,1.5fr)_repeat(4,minmax(0,1fr))_80px] md:items-center ${
+                    className={`grid grid-cols-1 gap-3 px-3 py-4 transition-colors duration-500 sm:grid-cols-2 sm:px-5 md:grid-cols-[minmax(0,1.5fr)_repeat(4,minmax(0,1fr))_80px] md:items-center ${
                       active ? "bg-[#FFC233]/10" : "hover:bg-slate-50"
                     }`}
                   >
-                    <div className="col-span-2 md:col-span-1 flex items-baseline justify-between md:block">
+                    <div className="col-span-1 flex items-baseline justify-between md:col-span-1 md:block sm:col-span-2">
                       <div>
                         <p className="text-sm font-medium text-[#0B1F3A]">{a.name}</p>
                         <p className="text-xs text-slate-500">{a.note}</p>

@@ -23,13 +23,13 @@ function Navbar() {
 
     ) return null
   return (
-    <nav className="sticky top-0 z-50 flex items-center justify-between bg-[#0B1F3A] px-6 py-4 text-white shadow-md">
+    <nav className="sticky top-0 z-50 flex flex-wrap items-center justify-between gap-3 bg-[#0B1F3A] px-4 py-3 text-white shadow-md sm:px-6 md:flex-nowrap md:py-4">
 
-      <Link to="/" className="text-xl font-bold">
+      <Link to="/" className="shrink-0 text-xl font-bold">
         Solar <span className="text-[#FFC233]">System</span>
       </Link>
 
-      <div className="flex items-center gap-6">
+      <div className="order-3 flex w-full items-center gap-5 overflow-x-auto whitespace-nowrap text-sm md:order-none md:w-auto md:gap-6">
         <Link to="/" className="hover:text-[#FFC233]">
           Home
         </Link>
@@ -52,7 +52,7 @@ function Navbar() {
 
         <Link
           to="/Login"
-          className="rounded-lg bg-[#FFC233] px-4 py-2 font-semibold text-[#0B1F3A] hover:bg-[#FFD25E]"
+          className="whitespace-nowrap rounded-lg bg-[#FFC233] px-3 py-2 text-sm font-semibold text-[#0B1F3A] hover:bg-[#FFD25E] sm:px-4"
         >
           Swith to saller
         </Link>

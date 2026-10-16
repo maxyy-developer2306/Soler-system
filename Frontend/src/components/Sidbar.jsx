@@ -32,7 +32,40 @@ function Sidbar() {
 
   return (
     <>
-      <aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col border-r border-slate-700 bg-[#0B1F3A] px-4 py-5 text-white">
+      <nav className="sticky top-0 z-40 flex gap-1 overflow-x-auto border-b border-slate-700 bg-[#0B1F3A] px-3 py-2 text-white md:hidden">
+        {menuItems.map((item) => {
+          const Icon = item.icon
+
+          return (
+            <button
+              key={item.name}
+              onClick={() => navigate(item.path)}
+              className="flex shrink-0 items-center gap-2 rounded-md px-3 py-2 text-xs text-slate-200 hover:bg-[#1E4E8C]"
+            >
+              <Icon size={16} />
+              {item.name}
+            </button>
+          )
+        })}
+        <button
+          onClick={() => navigate("/Products_managment")}
+          aria-label="Back to products"
+          title="Back to products"
+          className="flex shrink-0 items-center rounded-md px-3 py-2 text-slate-200 hover:bg-[#1E4E8C]"
+        >
+          <ArrowLeft size={17} />
+        </button>
+        <button
+          onClick={() => setShowLogout(true)}
+          aria-label="Logout"
+          title="Logout"
+          className="flex shrink-0 items-center rounded-md px-3 py-2 text-slate-200 hover:bg-red-500/20"
+        >
+          <LogOut size={17} />
+        </button>
+      </nav>
+
+      <aside className="fixed left-0 top-0 z-40 hidden h-screen w-64 flex-col border-r border-slate-700 bg-[#0B1F3A] px-4 py-5 text-white md:flex">
 
         <div className="mb-8 flex items-center gap-2 px-2">
          

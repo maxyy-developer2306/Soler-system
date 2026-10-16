@@ -53,7 +53,7 @@ function History() {
   }
 
   return (
-    <div className="ml-64 min-h-screen bg-white px-6 py-8">
+    <div className="min-h-screen min-w-0 bg-white px-4 py-6 sm:px-6 sm:py-8">
       <div className="mx-auto max-w-4xl">
 
         <div className="mb-7 border-b border-slate-200 pb-5">

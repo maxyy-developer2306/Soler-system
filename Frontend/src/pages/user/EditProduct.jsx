@@ -96,7 +96,7 @@ function EditProduct() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-5 ml-64">
+    <div className="min-h-screen min-w-0 bg-slate-50 p-4 sm:p-5">
       <div className="mx-auto max-w-4xl bg-white border border-slate-200 rounded-xl p-5">
 
         <div className="flex items-center gap-3 mb-5">

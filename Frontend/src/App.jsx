@@ -46,10 +46,10 @@ import Admin from "./pages/admin/Admin";
 
 function DashboardLayout() {
   return (
-    <div className="flex">
+    <div className="flex min-h-screen flex-col md:flex-row">
       <Sidbar />
 
-      <div className="flex-1">
+      <div className="min-w-0 flex-1 md:ml-64">
         <Outlet />
       </div>
     </div>
@@ -90,7 +90,7 @@ function App() {
         <Route
           path="/Calculate/all"
           element={
-            <div className="flex">
+            <div className="flex flex-col md:flex-row">
               <ApplianceSidebar />
               <div className="flex-1">
                 <AllAppliances />
@@ -102,7 +102,7 @@ function App() {
         <Route
           path="/Calculate"
           element={
-            <div className="flex">
+            <div className="flex flex-col md:flex-row">
               <ApplianceSidebar />
               <div className="flex-1">
                 <Calculate />
@@ -114,7 +114,7 @@ function App() {
         <Route
           path="/Calculate/ac"
           element={
-            <div className="flex">
+            <div className="flex flex-col md:flex-row">
               <ApplianceSidebar />
               <div className="flex-1">
                 <AC />
@@ -126,7 +126,7 @@ function App() {
         <Route
           path="/Calculate/refrigerator"
           element={
-            <div className="flex">
+            <div className="flex flex-col md:flex-row">
               <ApplianceSidebar />
               <div className="flex-1">
                 <Refrigerator />
@@ -138,7 +138,7 @@ function App() {
         <Route
           path="/Calculate/fan"
           element={
-            <div className="flex">
+            <div className="flex flex-col md:flex-row">
               <ApplianceSidebar />
               <div className="flex-1">
                 <Fan />
@@ -150,7 +150,7 @@ function App() {
         <Route
           path="/Calculate/tv"
           element={
-            <div className="flex">
+            <div className="flex flex-col md:flex-row">
               <ApplianceSidebar />
               <div className="flex-1">
                 <TV />
@@ -162,7 +162,7 @@ function App() {
         <Route
           path="/Calculate/computer"
           element={
-            <div className="flex">
+            <div className="flex flex-col md:flex-row">
               <ApplianceSidebar />
               <div className="flex-1">
                 <Computer />
@@ -174,7 +174,7 @@ function App() {
         <Route
           path="/Calculate/iron"
           element={
-            <div className="flex">
+            <div className="flex flex-col md:flex-row">
               <ApplianceSidebar />
               <div className="flex-1">
                 <Iron />
@@ -186,7 +186,7 @@ function App() {
         <Route
           path="/Calculate/kitchen"
           element={
-            <div className="flex">
+            <div className="flex flex-col md:flex-row">
               <ApplianceSidebar />
               <div className="flex-1">
                 <Kitchen />
@@ -198,7 +198,7 @@ function App() {
         <Route
           path="/Calculate/microwave"
           element={
-            <div className="flex">
+            <div className="flex flex-col md:flex-row">
               <ApplianceSidebar />
               <div className="flex-1">
                 <Microwave />
@@ -210,7 +210,7 @@ function App() {
         <Route
           path="/Calculate/washing-machine"
           element={
-            <div className="flex">
+            <div className="flex flex-col md:flex-row">
               <ApplianceSidebar />
               <div className="flex-1">
                 <WashingMachine />

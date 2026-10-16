@@ -81,14 +81,14 @@ function Orders() {
 
   if (loading) {
     return (
-      <div className="ml-64 p-6">
+      <div className="min-w-0 p-4 sm:p-6">
         <p>Loading orders...</p>
       </div>
     );
   }
 
   return (
-    <div className="ml-64 min-h-screen bg-white p-6">
+    <div className="min-h-screen min-w-0 bg-white p-4 sm:p-6">
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-slate-900">
           My Orders
