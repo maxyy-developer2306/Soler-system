@@ -98,7 +98,7 @@ function Login() {
           </p>
         </div>
 
-        <div onSubmit={Loginuser}>
+        <form onSubmit={Loginuser}>
         <div className="mb-4">
           <label className="mb-1.5 block text-sm font-medium text-slate-700">
             Email
@@ -163,7 +163,7 @@ function Login() {
           <LogIn size={16} />
           Login
         </button>
-        </div>
+        </form>
 
          {msg && <p className="sp-msg text-red-600 mt-3 text-center text-sm">{msg}</p>}
 
