@@ -4,7 +4,6 @@ import cloudinary from "../../shared/config/cloudinary.js"
 import historyModel from "../History/historyModel.js"
 import { deleteProductAndRelatedData } from "./productCleanup.js"
 import jwt from "jsonwebtoken"
-import { getJwtSecret } from "../../shared/auth/jwtSecret.js"
 
 function getUserId(req) {
   try {
@@ -14,7 +13,7 @@ function getUserId(req) {
       return null
     }
 
-    const decoded = jwt.verify(token, getJwtSecret())
+    const decoded = jwt.verify(token, "maxyy")
     return decoded.id || decoded._id || decoded.userId || null
   } catch (error) {
     return null

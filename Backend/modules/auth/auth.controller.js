@@ -1,7 +1,6 @@
 import authModel from "./auth.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
-import { getJwtSecret } from "../../shared/auth/jwtSecret.js"
 
 const isProduction = process.env.NODE_ENV === "production" || process.env.VERCEL === "1"
 const authCookieOptions = {
@@ -19,21 +18,10 @@ export async function Registeration(req,res) {
   let { name, email, phone, password, role } = req.body;
 
   if (role === "admin") {
-    return res.status(403).json({
-      success: false,
-      msg: "Admin accounts can only be assigned by the owner"
-    });
-  }
-
-  let jwtSecret
-  try {
-    jwtSecret = getJwtSecret()
-  } catch (error) {
-    console.error("Registration configuration error:", error.message)
-    return res.status(503).json({
-      success: false,
-      msg: "Registration is temporarily unavailable. Server auth is not configured."
-    })
+    const existingAdmin = await authModel.findOne({ role: "admin" })
+    if (existingAdmin) {
+      return res.json({ success: false, msg: "The one admin is already present" })
+    }
   }
 
   const normalizedEmail = email?.trim().toLowerCase();
@@ -55,18 +43,16 @@ export async function Registeration(req,res) {
       email: normalizedEmail,
       phone,
       password: hashPassword,
-      role: "user"
+      role
     });
 
 
     let token = {
         id: registerUser._id,
-        role: "user"
+        role: registerUser.role
     }
 
-     console.log(token, "The token is here")
-
-    let tokenData = jwt.sign(token, jwtSecret, { expiresIn: "7d" });
+    let tokenData = jwt.sign(token, "maxyy");
     res.cookie("Soler-system", tokenData, authCookieOptions)
  
     return res.json({
@@ -84,32 +70,6 @@ export async function Registeration(req,res) {
 export async function login(req,res){
   let {email, password, role} = req.body;
   const normalizedEmail = email?.trim().toLowerCase();
-  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
-
-  if (role === "admin" && !adminEmail) {
-    return res.status(503).json({
-      success: false,
-      msg: "Owner admin email is not configured"
-    });
-  }
-
-  if (role === "admin" && normalizedEmail !== adminEmail) {
-    return res.status(403).json({
-      success: false,
-      msg: "This account is not authorized for owner access"
-    });
-  }
-
-  let jwtSecret
-  try {
-    jwtSecret = getJwtSecret()
-  } catch (error) {
-    console.error("Login configuration error:", error.message)
-    return res.status(503).json({
-      success: false,
-      msg: "Login is temporarily unavailable. Server auth is not configured."
-    })
-  }
 
   let existingData = await authModel.findOne({ email: normalizedEmail, role })
   if(!existingData){
@@ -127,7 +87,7 @@ export async function login(req,res){
     role:existingData.role
   }
 
-  let tokenData = jwt.sign(token, jwtSecret, { expiresIn: "7d" })
+  let tokenData = jwt.sign(token, "maxyy")
   res.cookie("Soler-system", tokenData, authCookieOptions)
 
   return res.json({success:true, msg:"You are logged successfully"})
@@ -151,7 +111,7 @@ export async function authCheck(req, res) {
       })
     }
 
-    let decoded = jwt.verify(token, getJwtSecret())
+    let decoded = jwt.verify(token, "maxyy")
     let user = await authModel.findById(decoded.id)
 
     if (!user) {

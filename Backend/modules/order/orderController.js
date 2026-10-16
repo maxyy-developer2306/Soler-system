@@ -2,7 +2,6 @@ import orderModel from "./orderModel.js";
 import productModel from "../products/productModel.js";
 import historyModel from "../History/historyModel.js";
 import jwt from "jsonwebtoken";
-import { getJwtSecret } from "../../shared/auth/jwtSecret.js"
 
 // Returns the logged in user's id, or null if the token is missing or invalid
 function getUserId(req) {
@@ -10,7 +9,7 @@ function getUserId(req) {
     const token = req.cookies?.["Soler-system"];
     if (!token) return null;
 
-    const decoded = jwt.verify(token, getJwtSecret());
+    const decoded = jwt.verify(token, "maxyy");
     return decoded.id || decoded._id || decoded.userId || null;
   } catch (error) {
     // Invalid or expired token is treated as "not logged in"

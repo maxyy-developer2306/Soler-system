@@ -1,7 +1,6 @@
 
 import historyModel from "./historyModel.js"
 import jwt from "jsonwebtoken"
-import { getJwtSecret } from "../../shared/auth/jwtSecret.js"
 
 function getUserId(req) {
   const token = req.cookies?.["Soler-system"]
@@ -10,7 +9,7 @@ function getUserId(req) {
     return null
   }
 
-  const decoded = jwt.verify(token, getJwtSecret())
+  const decoded = jwt.verify(token, "maxyy")
 
   return decoded.id || decoded._id || decoded.userId
 }
