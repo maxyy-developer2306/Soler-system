@@ -6,6 +6,7 @@ import productRoute from "./modules/products/product.route.js"
 import historyRoute from "./modules/History/historyRoute.js"
 import orderRoute from "./modules/order/orderRoute.js"
 import adminRoutes from "./modules/admin/admin.routes.js"
+import profileRoute from "./modules/profile/profile.route.js"
 
 import dotenv from "dotenv"
 import cookieParser from "cookie-parser"
@@ -51,7 +52,7 @@ app.use("/user", requireDatabase, userRoute)
 app.use("/api/products", requireDatabase, productRoute)
 app.use("/api/history", requireDatabase, historyRoute)
 app.use("/api/admin", requireDatabase, adminRoutes)
-// app.use("/api/profile", profileRoute)
+app.use("/api/profile", requireDatabase, profileRoute)
 app.use("/api/orders", requireDatabase, orderRoute)
 
 

@@ -77,7 +77,36 @@ const orderSchema = new mongoose.Schema(
       type: String,
       enum: ["Pending", "Confirmed", "Shipped", "Delivered", "Cancelled"],
       default: "Pending"
-    }
+    },
+
+    cancellationReason: {
+      type: String,
+      trim: true,
+      maxlength: 500,
+      default: ""
+    },
+
+    hiddenForBuyer: {
+      type: Boolean,
+      default: false
+    },
+
+    messages: [{
+      senderId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+      },
+      message: {
+        type: String,
+        required: true,
+        trim: true,
+        maxlength: 2000
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now
+      }
+    }]
   },
   {
     timestamps: true

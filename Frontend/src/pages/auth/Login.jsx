@@ -1,4 +1,3 @@
-import React from "react";
 import { LogIn, Mail, Lock, UserCog, Sun } from "lucide-react";
 import axios from "axios";
 import { useState } from "react";
@@ -68,6 +67,16 @@ function Login() {
 
       setMsg(response.data.msg)
       if (response.data.success) {
+        const sessionResponse = await axios.get(`${API_BASE}/user/check`, {
+          withCredentials: true,
+          headers: { "Cache-Control": "no-cache", Pragma: "no-cache" }
+        })
+
+        if (String(sessionResponse.data.user?.id) !== String(response.data.user?.id)) {
+          setMsg("The login session does not match this account. Please log in again.")
+          return
+        }
+
         if (login.role === "admin") {
           navigate("/Admin")
         } else if (login.role === "user") {

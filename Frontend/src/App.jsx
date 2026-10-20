@@ -1,5 +1,4 @@
 
-import React from "react";
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 
 import Hero from "./components/Hero";
@@ -42,6 +41,8 @@ import EditProduct from "./pages/user/EditProduct";
 import ProfileCreate from "./pages/user/Profile.create";
 import ProfileEdit from "./pages/user/Profile.edit";
 import Orders from "./pages/user/Orders";
+import MyPurchases from "./pages/user/MyPurchases";
+import SellerProfile from "./pages/user/SellerProfile";
 import Admin from "./pages/admin/Admin";
 
 function DashboardLayout() {
@@ -70,6 +71,7 @@ function App() {
         <Route path="/MiniChatbot" element={<MiniChatbot />} />
         <Route path="/Admin" element={<Admin />} />
         <Route path="/Products_managment" element={<Products_managment />} />
+        <Route path="/seller/:sellerId" element={<SellerProfile />} />
 
        
         <Route element={<DashboardLayout />}>
@@ -79,6 +81,7 @@ function App() {
           <Route path="/ProfileCreate" element={<ProfileCreate />} />
           <Route path="/ProfileEdit" element={<ProfileEdit />} />
           <Route path="/Orders" element={<Orders />} />
+          <Route path="/MyPurchases" element={<MyPurchases />} />
          <Route path="/EditProduct/:id" element={<EditProduct />} />
          
           <Route path="/History" element={<History />} />

@@ -361,6 +361,7 @@ function FaqItem({ q, a }) {
           +
         </span>
       </button>
+     
 
       <div className={`aa-faq-content ${open ? "aa-faq-open" : ""}`}>
         <div className="overflow-hidden">

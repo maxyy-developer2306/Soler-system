@@ -3,7 +3,10 @@ import {
   createOrder,
   getMyOrders,
   getCustomerOrders,
+  removeCustomerPurchase,
   updateOrderStatus,
+  getOrderMessages,
+  sendOrderMessage,
   getAllOrders
 } from "./orderController.js";
 
@@ -14,6 +17,12 @@ router.post("/create", createOrder);
 router.get("/my-orders", getMyOrders);
 
 router.get("/customer-orders", getCustomerOrders);
+
+router.delete("/:id/purchase", removeCustomerPurchase);
+
+router.get("/:id/messages", getOrderMessages);
+
+router.post("/:id/messages", sendOrderMessage);
 
 router.patch("/:id/status", updateOrderStatus);
 

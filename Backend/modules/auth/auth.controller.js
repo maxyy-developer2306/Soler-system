@@ -57,8 +57,12 @@ export async function Registeration(req,res) {
  
     return res.json({
       success: true,
-      msg: "The api is working",
-      registerUser: registerUser,
+      msg: "Registration successful",
+      user: {
+        id: registerUser._id,
+        name: registerUser.name,
+        role: registerUser.role
+      }
     });
   
 }
@@ -90,7 +94,15 @@ export async function login(req,res){
   let tokenData = jwt.sign(token, "maxyy")
   res.cookie("Soler-system", tokenData, authCookieOptions)
 
-  return res.json({success:true, msg:"You are logged successfully"})
+  return res.json({
+    success: true,
+    msg: "You are logged successfully",
+    user: {
+      id: existingData._id,
+      name: existingData.name,
+      role: existingData.role
+    }
+  })
 }
 
 
@@ -101,6 +113,8 @@ export async function login(req,res){
 
 
 export async function authCheck(req, res) {
+  res.set("Cache-Control", "private, no-store, max-age=0");
+
   try {
     let token = req.cookies["Soler-system"]
 

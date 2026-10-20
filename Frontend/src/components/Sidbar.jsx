@@ -1,11 +1,14 @@
 
-import React, { useState } from "react"
+import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import axios from "axios"
+import { API_BASE } from "../config/api"
 import {
   LayoutDashboard,
   PlusCircle,
   History,
   User,
+  ShoppingBag,
   
   LogOut,
   ArrowLeft,
@@ -16,18 +19,35 @@ import {
 function Sidbar() {
   const navigate = useNavigate()
   const [showLogout, setShowLogout] = useState(false)
+  const [logoutError, setLogoutError] = useState("")
+  const [logoutLoading, setLogoutLoading] = useState(false)
 
   const menuItems = [
     { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
+    { name: "Profile", icon: User, path: "/Profile" },
     { name: "Create Product", icon: PlusCircle, path: "/Myprodcuts" },
     { name: "History", icon: History, path: "/history" },
+    { name: "My Purchases", icon: ShoppingBag, path: "/MyPurchases" },
     { name: "Orders", icon: User, path: "/Orders" },
    
   ]
 
-  function handleLogout() {
-    setShowLogout(false)
-    navigate("/login")
+  async function handleLogout() {
+    setLogoutLoading(true)
+    setLogoutError("")
+    try {
+      await axios.post(
+        `${API_BASE}/user/logout`,
+        {},
+        { withCredentials: true }
+      )
+      navigate("/Login", { replace: true })
+    } catch {
+      setLogoutError("Could not log out. Check your connection and try again.")
+      setShowLogout(true)
+    } finally {
+      setLogoutLoading(false)
+    }
   }
 
   return (
@@ -144,9 +164,16 @@ function Sidbar() {
               Are you sure you want to logout from your account?
             </p>
 
+            {logoutError && (
+              <p role="alert" className="mt-3 text-sm text-red-600">
+                {logoutError}
+              </p>
+            )}
+
             <div className="mt-6 flex justify-end gap-3">
               <button
                 onClick={() => setShowLogout(false)}
+                disabled={logoutLoading}
                 className="cursor-pointer rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
               >
                 Cancel
@@ -154,9 +181,10 @@ function Sidbar() {
 
               <button
                 onClick={handleLogout}
-                className="cursor-pointer rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700"
+                disabled={logoutLoading}
+                className="cursor-pointer rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700 disabled:opacity-50"
               >
-                Yes, Logout
+                {logoutLoading ? "Logging out..." : "Yes, Logout"}
               </button>
             </div>
 

@@ -1,4 +1,3 @@
-import React from "react";
 import { UserPlus, User, Mail, Lock, Phone, UserCog, Sun } from "lucide-react";
 import axios from "axios";
 import { useState } from "react";
@@ -64,11 +63,19 @@ function Register() {
       }
     );
 
-    console.log(responce);
-
     setMsg(responce.data.msg);
 
     if (responce.data.success == true) {
+      let sessionResponse = await axios.get(`${API_BASE}/user/check`, {
+        withCredentials: true,
+        headers: { "Cache-Control": "no-cache", Pragma: "no-cache" }
+      });
+
+      if (String(sessionResponse.data.user?.id) !== String(responce.data.user?.id)) {
+        setMsg("Account session could not be verified. Please log in again.");
+        return;
+      }
+
       navigate("/Products_managment");
     }
   } catch (error) {

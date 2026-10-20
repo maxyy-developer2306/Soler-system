@@ -18,6 +18,9 @@ function Navbar() {
      location.pathname=="/Login" ||
      location.pathname=="/register" ||
      location.pathname=="/Admin" ||
+     location.pathname=="/Profile" ||
+     location.pathname=="/MyPurchases" ||
+     location.pathname=="/ProfileCreate" ||
      location.pathname.startsWith("/EditProduct/") 
    
 

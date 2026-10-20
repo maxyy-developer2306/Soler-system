@@ -33,7 +33,6 @@ export default function Admin() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [deletingProduct, setDeletingProduct] = useState("")
-  const [updatingOrder, setUpdatingOrder] = useState("")
 
   async function apiRequest(path, options = {}) {
     const response = await fetch(`${API}/api/admin${path}`, {
@@ -113,39 +112,6 @@ export default function Admin() {
       window.alert(error.message || "Unable to delete product")
     } finally {
       setDeletingProduct("")
-    }
-  }
-
-  async function updateOrderStatus(orderId, status) {
-    setUpdatingOrder(orderId)
-    setError("")
-
-    try {
-      const response = await apiRequest(`/orders/${orderId}/status`, {
-        method: "PATCH",
-        body: JSON.stringify({ status })
-      })
-
-      setOrders(currentOrders =>
-        currentOrders.map(order =>
-          order._id === orderId ? response.order : order
-        )
-      )
-
-      const updatedRequests = [apiRequest("/dashboard")]
-      if (status === "Cancelled") {
-        updatedRequests.push(apiRequest("/products"))
-      }
-
-      const [updated, productData] = await Promise.all(updatedRequests)
-      setDashboard(updated.dashboard || {})
-      if (productData) {
-        setProducts(productData.products || [])
-      }
-    } catch (error) {
-      setError(error.message || "Unable to update order status")
-    } finally {
-      setUpdatingOrder("")
     }
   }
 
@@ -642,33 +608,9 @@ export default function Admin() {
                                 {formatDate(order.createdAt)}
                               </td>
                               <td className="px-5 py-4">
-                                <select
-                                  value={order.status || "Pending"}
-                                  onChange={event =>
-                                    updateOrderStatus(order._id, event.target.value)
-                                  }
-                                  disabled={
-                                    updatingOrder === order._id ||
-                                    ["Delivered", "Cancelled"].includes(order.status)
-                                  }
-                                  className={`rounded-md border border-[#e5e5e5] px-2 py-1 text-xs ${statusStyle(order.status)} disabled:cursor-not-allowed disabled:opacity-70`}
-                                >
-                                  <option value={order.status || "Pending"}>
-                                    {order.status || "Pending"}
-                                  </option>
-                                  {(order.status === "Pending"
-                                    ? ["Confirmed", "Cancelled"]
-                                    : order.status === "Confirmed"
-                                      ? ["Shipped", "Cancelled"]
-                                      : order.status === "Shipped"
-                                        ? ["Delivered"]
-                                        : []
-                                  ).map(status => (
-                                    <option key={status} value={status}>
-                                      {status}
-                                    </option>
-                                  ))}
-                                </select>
+                                <span className={`inline-flex rounded-md px-2 py-1 text-xs ${statusStyle(order.status)}`}>
+                                  {order.status || "Pending"}
+                                </span>
                               </td>
                             </tr>
                           ))}
